@@ -6,21 +6,32 @@ import (
 	"encoding/json"
 )
 
+const configFileName = ".gatorconfig.json"
 
 type Config struct {
 	URL		string		`json:"db_url"`
 	UserName	string		`json:"current_user_name"`
 }
 
-func Read() (Config,error) {
+// helper function to get the full path 
+
+func getConfigFilePath() (string,error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return Config{},err
+		return "", err
 	}
-	relativePath := ".gatorconfig.json"
+	configpath := configFileName
+	
+	return filepath.Join(home, configpath), nil
+}
 
-	fullPath := filepath.Join(home, relativePath)
-		
+func Read() (Config,error) {
+	
+	fullPath,err := getConfigFilePath()		
+	if err != nil {
+		return Config{}, err
+	}
+
 	val, err := os.ReadFile(fullPath)
 	if err != nil {
 		return Config{}, err
@@ -33,4 +44,29 @@ func Read() (Config,error) {
 	}
 
 	return gatorfile, nil
+}
+
+func write(cfg Config) error {
+	configPath, err := getConfigFilePath()
+	if err != nil {
+		return err
+	}
+	updatedGatorFile, err := json.Marshal(cfg)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(configPath, updatedGatorFile,0600)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *Config) SetUser(username string) error {
+	c.UserName = username
+	err :=	write(*c)
+	if err != nil {
+		return err
+	}
+	return nil
 }
