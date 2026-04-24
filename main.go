@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	
+	"os"
 	"github.com/ham-andres/Gator_rss/internal/config"
 
 )
@@ -17,14 +17,18 @@ func main()  {
 	}
 	fmt.Printf("Read config: %+v\n", cfg)
 
-	err = cfg.SetUser("hamandres")
-	if err != nil {
-		log.Fatalf("coundn't set current user: %v", err)
-	}
+	myState := state{cfg: &cfg}
 
-	cfg, err = config.Read()
-	if err != nil {
-		log.Fatal("err reading config: %v",err)
+	cmds := commands{handlers: map[string]func(*state, command) error{}}
+	cmds.register("login", handlerLogin)
+	if len(os.Args) < 2 {
+		fmt.Println("error: not enough arguments")
+		os.Exit(1)
 	}
-	fmt.Printf("Read config again: %+v\n",cfg)
+	exec := command{name: os.Args[1], arguments: os.Args[2:]}
+	err = cmds.run(&myState, exec)
+	if err != nil{
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
