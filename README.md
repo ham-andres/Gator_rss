@@ -16,4 +16,11 @@
   - we firstly read config
   - create state and shared the address of &config
   - commands handlers ( where we register login command)
-  - and lastly execute the command 
+  - and lastly execute the command
+
+
+-  sql part:
+
+1. connection string for postgres: 
+"postgres://postgres:postgres@localhost:5432/gator"
+
