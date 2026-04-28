@@ -3,7 +3,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"database/sql"
+
 	"github.com/ham-andres/Gator_rss/internal/config"
+	"github.com/ham-andres/Gator_rss/internal/database"
+	_ "github.com/lib/pq"
 
 )
 
@@ -15,11 +19,22 @@ func main()  {
 		log.Fatalf("error reading config: %v",err)
 	}
 	fmt.Printf("Read config: %+v\n", cfg)
+	
+	// loading database
+	db, err := sql.Open("postgres",cfg.DURL)
+	if err != nil {
+		log.Fatalf("error loading database: %v",err)
+	}
+	defer db.Close()
 
-	myState := state{cfg: &cfg}
+	dbQueries := database.New(db)
+
+	myState := state{db: dbQueries, cfg: &cfg}
+
 
 	cmds := commands{handlers: map[string]func(*state, command) error{}}
 	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
 	if len(os.Args) < 2 {
 		fmt.Println("error: not enough arguments")
 		os.Exit(1)

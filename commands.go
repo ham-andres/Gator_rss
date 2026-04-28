@@ -1,12 +1,18 @@
 package main
 
 import (
-	"github.com/ham-andres/Gator_rss/internal/config"
+	"time"
+	"context"
 	"fmt"
+
+	"github.com/google/uuid"
+  "os"
+	"github.com/ham-andres/Gator_rss/internal/config"
+	"github.com/ham-andres/Gator_rss/internal/database"
 )
 
 type state struct {
-	
+	db	*database.Queries
 	cfg *config.Config
 }
 
@@ -15,18 +21,56 @@ type command struct {
 	arguments	[]string
 }
 
+
+
+
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.arguments) == 0 {
 		return fmt.Errorf("no username given")
 	}
-	
+	ctx := context.Background()
 	name := cmd.arguments[0]
-	err := s.cfg.SetUser(name)
+	user, err := s.db.GetUser(ctx, name)
+	if err != nil {
+		fmt.Printf("error fetching user in login: %v\n", err)
+		os.Exit(1)
+	}
+	err = s.cfg.SetUser(user.Name)
+	if err != nil {
+		return fmt.Errorf("error setting user: %v\n",err) 
+	}
+	
+	fmt.Printf("%v user has been set\n",user.Name)
+	return nil
+
+}
+
+
+
+func handlerRegister(s *state, cmd command) error {
+	if len(cmd.arguments) == 0 {
+		return fmt.Errorf("no username given")
+	}
+	ctx := context.Background()
+	name := cmd.arguments[0]
+	userParam := database.CreateUserParams{
+		ID: uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name: name,
+	}
+	user, err := s.db.CreateUser(ctx, userParam)
+	if err != nil {
+		fmt.Printf("error creating user: %v\n",err)
+		os.Exit(1)
+	}
+
+
+	err = s.cfg.SetUser(user.Name)
 	if err != nil {
 		return err
 	}
-	
-	fmt.Printf("%v user has been set\n", name)
+	fmt.Printf("%v user has been created\n",user.Name)
 	return nil
 
 }
