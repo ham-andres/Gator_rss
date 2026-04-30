@@ -60,6 +60,22 @@ func handlerLogin(s *state, cmd command) error {
 	return nil
 }
 
+func handlerUsers(s *state, cmd command) error {
+	user, err := s.db.GetUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("table is empty: %w", err)
+	}
+
+	for _, u := range(user) {
+		if s.cfg.CurrentUserName == u.Name {
+			fmt.Printf("* %v (current)\n",u.Name)
+		} else {
+			fmt.Printf("* %v\n",u.Name)
+		}
+	}
+	return nil
+}
+
 func printUser( user database.User) {
 	fmt.Printf(" * ID:	%v\n", user.ID)
 	fmt.Printf(" * Name:	%v\n", user.Name)
