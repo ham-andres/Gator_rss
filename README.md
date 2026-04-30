@@ -24,3 +24,21 @@
 1. connection string for postgres: 
 "postgres://postgres:postgres@localhost:5432/gator"
 
+- interaction with postgres through client like psql 
+  usage (start): sudo service postgresql start
+  installation: sudo apt install postgresql postgresql-contrib
+
+  start: sudo service postgresql start
+  stop: sudo service postgresql stop
+  connect: sudo -u postgres psql
+
+  - Goose migration 
+  Just a .sql file with some SQL queries and some special comments.
+  CREATE: goose <connection string> up 
+  DROP: goose <connection string> down 
+
+  - SQLC 
+  Go program that generates Go code from SQL queries like ORM but not exactly ORM.
+
+
+
