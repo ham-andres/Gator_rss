@@ -28,15 +28,18 @@ type RSSItem struct {
 
 // incomplete function
 func fetchFeed(ctx context.Context, feedURL string) ( *RSSFeed, error) {
+
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
 	req, err := http.NewRequestWithContext(ctx, "GET", feedURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("cannot access the feedURL: %w", err)
 	}
 	req.Header.Set("User-Agent","gator")
 
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
+	
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("Request failed: %v", err)
@@ -58,9 +61,10 @@ func fetchFeed(ctx context.Context, feedURL string) ( *RSSFeed, error) {
 	rss.Channel.Title = html.UnescapeString(rss.Channel.Title)
 	rss.Channel.Description = html.UnescapeString(rss.Channel.Description)
 
-	for i := range rss.Channel.Item{
-		rss.Channel.Item[i].Title = html.UnescapeString(rss.Channel.Item[i].Title)
-		rss.Channel.Item[i].Description = html.UnescapeString(rss.Channel.Item[i].Description)
+	for i, item := range rss.Channel.Item{
+		item.Title = html.UnescapeString(item.Title)
+		item.Description = html.UnescapeString(item.Description)
+		rss.Channel.Item[i] = item
 	}
 	return rss, nil 
 }
