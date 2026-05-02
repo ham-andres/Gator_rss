@@ -40,5 +40,27 @@
   - SQLC 
   Go program that generates Go code from SQL queries like ORM but not exactly ORM.
 
+  2. step to handle the table and their entries 
+  - added Reset functionality (handler_reset.go) 
+  all the function have similar signature func <name> (parameter 1(state), parameter2 (command)) error
+  - added handler_user.go file which has 3 function to manage user's info, login , register, listing users (showing current user name) 
+  
+ 3. RSS part
+ - used a rss struct which is output for the fetchFeed function
+ used: http.NewRequestWithContext
+       req.Header.Set("User-Agent","gator")
+       made client:= &http.Client{..}
+       used resp,err := Client.do(req)
+       io.ReadAll(resp.Body)
+       feed := New(RSSFeed)
+       err = xml.Unmarshal
+
+       this above part was similar to http 
+
+       html.UnescapeString to make it human readable 
+4. Under RSS part (Feed)
+- handlerFeed func and handlerAgg function
+- handlerAgg: fetchFeed(ctx, Url )
+- handlerFeed: uses s.db.GetUser(ctx, CreateFeedParams struct)
 
 
