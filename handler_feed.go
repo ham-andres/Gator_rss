@@ -32,6 +32,18 @@ func handlerFeed(s *state, cmd command) error {
 	if err != nil {
 		return fmt.Errorf("Error while accessing feed: %w", err)
 	}
-	fmt.Printf("%+v\n",feed)
+	fmt.Println("Feed created successfully:")
+	printFeed(feed)
+	fmt.Println()
+	fmt.Println("=====================================")
 	return nil
+}
+
+func printFeed(feed database.Feed) {
+	fmt.Printf("* ID:            %s\n", feed.ID)
+	fmt.Printf("* Created:       %v\n", feed.CreatedAt)
+	fmt.Printf("* Updated:       %v\n", feed.UpdatedAt)
+	fmt.Printf("* Name:          %s\n", feed.Name)
+	fmt.Printf("* URL:           %s\n", feed.Url)
+	fmt.Printf("* UserID:        %s\n", feed.UserID)
 }
