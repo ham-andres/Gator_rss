@@ -47,3 +47,21 @@ func printFeed(feed database.Feed) {
 	fmt.Printf("* URL:           %s\n", feed.Url)
 	fmt.Printf("* UserID:        %s\n", feed.UserID)
 }
+
+func handlerShowFeeds(s *state, cmd command) error {
+	feed, err := s.db.GetFeeds(context.Background())
+	if err != nil {
+		return err
+	}
+	for _,f := range feed {
+		user, err := s.db.GetUserById(context.Background(),f.UserID.UUID)
+		if err != nil {
+			return fmt.Errorf("couldn't access username %w", err)
+		}
+		fmt.Printf("Username: %v", user.Name)
+		printFeed(f)
+		fmt.Println("--------------------------")
+	}
+	fmt.Println("=====================================")
+	return nil
+}
