@@ -9,7 +9,7 @@ import (
    "github.com/google/uuid"
 )
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.arguments) != 1 {
 		return fmt.Errorf("usage: %v <url>",cmd.name)
 	}
@@ -19,11 +19,9 @@ func handlerFollow(s *state, cmd command) error {
 	if err != nil {
 		return fmt.Errorf("failed accessing the feed: %w", err)
 	}
-	currName := s.cfg.CurrentUserName
-	user, err := s.db.GetUser(context.Background(), currName)
-	if err != nil {
-		return fmt.Errorf("failed accessing current username: %w",err)
-	}
+
+	// user code deleted, use middlewareLoggedIn
+
 	timestamp := time.Now()
 	params := database.CreateFeedFollowParams{
 		ID: uuid.New(),
@@ -44,18 +42,19 @@ func handlerFollow(s *state, cmd command) error {
 
 }
 
-func handlerFollowing(s *state, cmd command) error {
-	currUserName := s.cfg.CurrentUserName
-	user, err := s.db.GetUser(context.Background(), currUserName)
-	if err != nil {
-		return fmt.Errorf("failed accessing user id: %w", err)
-	}
+func handlerFollowing(s *state, cmd command, user database.User) error {
+// user code deleted, uses middlewareLoggedIn	
 	currUserId := user.ID 
 	
 	followingFeeds, err := s.db.GetFeedFollowsForUser(context.Background(), currUserId) 
 	if err != nil {
 		return fmt.Errorf("failed accessing feed for current user: %w",err)
 	}
+	if len(followingFeeds) == 0 {
+		fmt.Println("No feed follows found for this user.")
+		return nil
+	}
+
 	for _,fFeed := range followingFeeds {
 		fmt.Printf("Feed Name: %v \n", fFeed.FeedName)
 		fmt.Println("----------------------------")

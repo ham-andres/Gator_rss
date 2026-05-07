@@ -9,16 +9,12 @@ import (
     "github.com/google/uuid"
 )
 
-func handlerFeed(s *state, cmd command) error {
+func handlerFeed(s *state, cmd command, user database.User) error {
 
 	if len(cmd.arguments) != 2 {
 		return fmt.Errorf("usage: %v <name> <Url> ", cmd.name)
-	}
-
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return err
-	}
+	}	
+// user code deleted uses middle ware func
 
 	feed, err := s.db.CreateFeed(context.Background(), 
 			database.CreateFeedParams{
