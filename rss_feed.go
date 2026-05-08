@@ -26,7 +26,7 @@ type RSSItem struct {
 	PubDate     string `xml:"pubDate"`
 }
 
-// incomplete function
+// fetching feed function
 func fetchFeed(ctx context.Context, feedURL string) ( *RSSFeed, error) {
 
 	client := &http.Client{

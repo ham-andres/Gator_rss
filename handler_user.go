@@ -43,7 +43,7 @@ func handlerRegister(s *state, cmd command) error {
 
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.arguments) != 1 {
-		return fmt.Errorf("Usage: %s <name>", cmd.name)
+		return fmt.Errorf("Usage: %v <name>", cmd.name)
 	}
 	name := cmd.arguments[0]
 
